@@ -5,11 +5,11 @@
 struct Node {
   int data;
   struct Node *next;
-}*first=NULL;
+}*first=NULL,*last=NULL;
 
 //create temporary linked list
 void create(int A[], int n) {
-  struct Node *temp, *last;
+  struct Node *temp;
   first =(struct Node*) malloc(sizeof(struct Node));
   first->data = A[0];
   first->next = NULL;
@@ -137,8 +137,127 @@ struct Node* improvedSearch(struct Node* ptr, int item) {
   return NULL;
 }
 
+//insertion of node at given position
+void insert(int pos, int item) {
+  if(first == NULL) {
+    struct Node* temp = (struct Node*) malloc(sizeof(struct Node));
+    temp->data = item;
+    temp->next = NULL;
+    first = last = temp;
+  }
+  else if(pos == 0) {
+    struct Node* temp = (struct Node*) malloc(sizeof(struct Node));
+    temp->data = item;
+    temp->next = first;
+    first = temp;
+  } else {
+    struct Node* ptr = first;
+    for(int i=0; i<pos-1 && ptr; i++)
+      ptr = ptr->next;
+    if(ptr) {
+      struct Node* temp = (struct Node*) malloc(sizeof(struct Node));
+      temp->data = item;
+      temp->next = ptr->next;
+      if(ptr->next == NULL)
+        last = temp;
+      ptr->next = temp;
+    }
+  }
+}
+
+//append the node
+void append(int item) {
+  if(first == NULL) {
+    struct Node* temp = (struct Node*) malloc(sizeof(struct Node));
+    temp->data = item;
+    temp->next = NULL;
+    first = last = temp;
+  } else {
+    struct Node* temp = (struct Node*) malloc(sizeof(struct Node));
+    temp->data = item;
+    last->next = temp;
+    temp->next = NULL;
+    last = temp;
+  }
+}
+
+//delete the node for given position
+int delete(int pos) {
+  if(pos == 0) {
+    struct Node* ptr = first;
+    first = first->next;
+    int item = ptr->data;
+    free(ptr);
+    return item;
+  }
+  else {
+    struct Node* curr = first;
+    struct Node* prev = NULL;
+    for(int i=0; i<pos && curr; i++) {
+      prev = curr;
+      curr = curr->next;
+    }
+    prev->next = curr->next;
+    int item = curr->data;
+    free(curr);
+    return item;
+  }
+}
+
+//remove duplicates from the list
+void removeDuplicates(struct Node* p) {
+  struct Node* q = p->next;
+  while(q!=NULL) {
+    if(p->data != q->data) {
+      p = q;
+      q = q->next;
+    }
+    else {
+      p->next = q->next;
+      free(q);
+      q = p->next;
+    }
+  }
+}
+
+//reverse linked list using sliding pointers
+void reverseList(struct Node* p) {
+  struct Node *q = NULL, *r = NULL;
+  while(p!=NULL) {
+    r = q;
+    q = p;
+    p = p->next;
+    q->next = r;
+  }
+  first = q;
+}
+
+//recursively reverse linked list
+void RReverseList(struct Node* q, struct Node* p) {
+  if(p!=NULL) {
+    RReverseList(p, p->next);
+    p->next = q;
+  }
+  else
+    first = q;
+}
+
+//find loop in the list
+int isLoop(struct Node* ptr) {
+  struct Node *p, *q;
+  p = q = ptr;
+  do {
+    p = p->next;
+    q = q->next;
+    q = q ? q->next : q;
+  } while(p && q && p!=q);
+  if(p==q)
+    return 1;
+  return 0;
+}
+
 int main() {
-  int A[] = {1,2,3,4,5};
+  int A[] = {1,2,2,5,5};
   create(A, 5);
   display(first);
   RDisplay(first);
@@ -152,9 +271,32 @@ int main() {
   printf("%d\n",max(first));
   printf("%d\n",RMax(first));
   struct Node* ptr = search(first, 3);
-  printf("%d\n",ptr->data);
+  if(ptr)
+    printf("%d\n",ptr->data);
   ptr = RSearch(first, 3);
-  printf("%d\n",ptr->data);
-  ptr = improvedSearch(first, 4);
+  if(ptr)
+    printf("%d\n",ptr->data);
+  if(ptr)
+    ptr = improvedSearch(first, 4);
   display(first);
+  insert(0, 6);
+  insert(3,6);
+  insert(7,9);
+  display(first);
+  append(9);
+  append(9);
+  display(first);
+  delete(0);
+  display(first);
+  delete(3);
+  display(first);
+  delete(7);
+  display(first);
+  removeDuplicates(first);
+  display(first);
+  reverseList(first);
+  display(first);
+  RReverseList(NULL, first);
+  display(first);
+  printf("%d\n",isLoop(first));
 }
