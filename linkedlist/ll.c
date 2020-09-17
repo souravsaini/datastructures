@@ -205,7 +205,7 @@ int delete(int pos) {
 }
 
 //remove duplicates from the list
-void removeDuplicates(struct Node* p) {
+void removeDuplicatesSorted(struct Node* p) {
   struct Node* q = p->next;
   while(q!=NULL) {
     if(p->data != q->data) {
@@ -256,6 +256,16 @@ int isLoop(struct Node* ptr) {
   return 0;
 }
 
+struct Node* getMiddle(struct Node* ptr) {
+  struct Node *p, *q;
+  q = p = ptr;
+  while(p!=NULL && p->next!=NULL) {
+    q = q->next;
+    p = p->next->next;
+  }
+  return q;
+}
+
 int main() {
   int A[] = {1,2,2,5,5};
   create(A, 5);
@@ -292,11 +302,15 @@ int main() {
   display(first);
   delete(7);
   display(first);
-  removeDuplicates(first);
+  removeDuplicatesSorted(first);
   display(first);
   reverseList(first);
   display(first);
   RReverseList(NULL, first);
   display(first);
   printf("%d\n",isLoop(first));
+  display(first);
+  ptr = getMiddle(first);
+  if(ptr)
+    printf("%d\n",ptr->data);
 }
